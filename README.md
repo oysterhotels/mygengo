@@ -1,7 +1,9 @@
 mygengo
 =======
 
-[Oyster.com's](http://www.oyster.com/) Python interface to the myGengo translation API. Example:
+Python interface to the myGengo translation API, as used by [Oyster.com](http://www.oyster.com/).
+
+Simple example:
 
 ```python
 >>> import mygengo
@@ -13,3 +15,5 @@ mygengo
 >>> client.get_job(1234)
 {'body_tgt': "Il s'agit d'un test", ...}
 ```
+
+See the docstring comments in the code for more details.
