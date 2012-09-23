@@ -313,7 +313,7 @@ class Client(object):
                    'lc_src': source,
                    'lc_tgt': target,
                    'tier': tier,
-                   'auto_approve': str(int(auto_approve))}
+                   'auto_approve': int(auto_approve)}
             if slug is not None:
                 job['slug'] = slug
             if custom_data is not None:
@@ -356,8 +356,8 @@ class Client(object):
         
         """
         params = {'jobs': jobs,
-                  'as_group': str(int(as_group)),
-                  'process': str(int(process))}
+                  'as_group': int(as_group),
+                  'process': int(process)}
         response = self._request('POST', 'translate/jobs', params=params, timeout=300)
         return response
 
@@ -390,7 +390,7 @@ if __name__ == '__main__':
 Examples:
   mygengo.py get_account_balance
   mygengo.py get_languages
-  mygengo.py submit_job "This is a test" es auto_approve=1
+  mygengo.py submit_job "This is a test" fr auto_approve=1
   mygengo.py get_job 8754 pre_mt=1
   mygengo.py get_job_preview 8754 filename=preview.jpg
 
