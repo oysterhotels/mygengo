@@ -1,4 +1,4 @@
-"""Interface to the myGengo translation API.
+"""Interface to the Gengo translation API.
 
 Sandbox example:
 
@@ -55,12 +55,12 @@ class ConnectionError(Error):
     pass
 
 class JsonError(Error):
-    """Error parsing the JSON returned from myGengo."""
+    """Error parsing the JSON returned from Gengo."""
     pass
 
 class MygengoError(Error):
-    """A myGengo error. For a list of error codes, see:
-    http://mygengo.com/services/api/dev-docs/error-codes
+    """A Gengo error. For a list of error codes, see:
+    http://gengo.com/services/api/dev-docs/error-codes
     
     """
     pass
@@ -87,8 +87,8 @@ class Client(object):
             raise JsonError(-2, "Bad JSON: {0!r} not in response".format(field))
 
     def __init__(self, api_key, private_key, sandbox=False):
-        """Initialize a myGengo Client with given API and private keys. If sandbox is
-        True, use myGengo's sandbox API rather than the real thing.
+        """Initialize a Gengo Client with given API and private keys. If sandbox is
+        True, use Gengo's sandbox API rather than the real thing.
 
         """
         self._api_url = _sandbox_api_url if sandbox else _api_url
@@ -102,7 +102,7 @@ class Client(object):
         params['ts'] = str(int(time.time()))
 
     def _api_sig(self, query):
-        """Return myGengo authentication signature based on given query string."""
+        """Return Gengo authentication signature based on given query string."""
         query_hmac = hmac.new(self._private_key, query, hashlib.sha1)
         return query_hmac.hexdigest()
 
@@ -118,7 +118,7 @@ class Client(object):
         self._last_request_time = now
 
     def _request(self, method, path, params=None, parse_json=True, timeout=10):
-        """Perform a myGengo request with given method, path, and params dict. Not
+        """Perform a Gengo request with given method, path, and params dict. Not
         intended to be used directly -- use Client.get_job() and the like instead.
         
         """
@@ -128,12 +128,12 @@ class Client(object):
             params = {}
 
         if method in ('POST', 'PUT'):
-            # myGengo expects params['data'] to be serialized using JSON
+            # Gengo expects params['data'] to be serialized using JSON
             params = {'data': json.dumps(params, separators=(',', ':'), sort_keys=True)}
             self._add_api_key(params)
             # Serialize using JSON again to calculate signature
             data = json.dumps(params, separators=(',', ':'), sort_keys=True)
-            # myGengo API seems to calculate signature with slashes escaped (not
+            # Gengo API seems to calculate signature with slashes escaped (not
             # required by JSON, but allowed)
             data = data.replace('/', r'\/')
             params['api_sig'] = self._api_sig(data)
@@ -202,14 +202,14 @@ class Client(object):
 
     def get_account_stats(self):
         """Return account statistics, such as credits spent. See also:
-        http://mygengo.com/services/api/dev-docs/methods/account-stats-get
+        http://gengo.com/services/api/dev-docs/methods/account-stats-get
         
         """
         return self._request('GET', 'account/stats')
 
     def get_account_balance(self):
         """Return the account credit balance (as a string). See also:
-        http://mygengo.com/services/api/dev-docs/methods/account-balance-get
+        http://gengo.com/services/api/dev-docs/methods/account-balance-get
 
         """
         response = self._request('GET', 'account/balance')
@@ -219,7 +219,7 @@ class Client(object):
     def get_job_preview(self, job_id, filename=None):
         """Return data for JPEG preview image of translated text for given job. Write
         data to output filename if given, otherwise return data as string. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-job-id-revisions-get
+        http://gengo.com/services/api/dev-docs/methods/translate-job-id-revisions-get
         
         """
         image_data = self._request('GET', 'translate/job/{0}/preview'.format(job_id),
@@ -232,7 +232,7 @@ class Client(object):
 
     def get_job_revision(self, job_id, revision_id):
         """Return the given revision for the given job. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-job-id-revision-rev-id-get
+        http://gengo.com/services/api/dev-docs/methods/translate-job-id-revision-rev-id-get
         
         """
         return self._request('GET', 'translate/job/{0}/revision/{1}'.format(job_id,
@@ -240,7 +240,7 @@ class Client(object):
 
     def get_job_revisions(self, job_id):
         """Return the list of revisions for the given job. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-job-id-revisions-get
+        http://gengo.com/services/api/dev-docs/methods/translate-job-id-revisions-get
         
         """
         response = self._request('GET', 'translate/job/{0}/revisions'.format(job_id))
@@ -249,7 +249,7 @@ class Client(object):
 
     def get_job_feedback(self, job_id):
         """Return the feedback submitted for the given job. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-job-id-feedback-get
+        http://gengo.com/services/api/dev-docs/methods/translate-job-id-feedback-get
         
         """
         response = self._request('GET', 'translate/job/{0}/feedback'.format(job_id))
@@ -258,7 +258,7 @@ class Client(object):
 
     def submit_job_comment(self, job_id, comment):
         """Submit a new comment on the given job's comment thread. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-job-id-comment-post
+        http://gengo.com/services/api/dev-docs/methods/translate-job-id-comment-post
         
         """
         return self._request('POST', 'translate/job/{0}/comment'.format(job_id),
@@ -266,7 +266,7 @@ class Client(object):
 
     def get_job_comments(self, job_id):
         """Return the list of comments in given job's comment thread. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-job-id-comments-get
+        http://gengo.com/services/api/dev-docs/methods/translate-job-id-comments-get
         
         """
         response = self._request('GET', 'translate/job/{0}/comments'.format(job_id))
@@ -275,14 +275,14 @@ class Client(object):
 
     def cancel_job(self, job_id):
         """Cancel the given job. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-job-id-delete
+        http://gengo.com/services/api/dev-docs/methods/translate-job-id-delete
         
         """
         self._request('DELETE', 'translate/job/{0}'.format(job_id))
 
     def get_job(self, job_id, pre_mt=False):
         """Return a specific job. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-job-id-get
+        http://gengo.com/services/api/dev-docs/methods/translate-job-id-get
         
         """
         params = {'pre_mt': '1'} if pre_mt else None
@@ -293,7 +293,7 @@ class Client(object):
 
     def update_job(self, job_id, action, **other_params):
         """Update the given job. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-job-id-put
+        http://gengo.com/services/api/dev-docs/methods/translate-job-id-put
         
         """
         params = {'action': action}
@@ -305,7 +305,7 @@ class Client(object):
                    job=None):
         """Submit a job for translation. If the content has already been translated this
         will return the existing job. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-job-post
+        http://gengo.com/services/api/dev-docs/methods/translate-job-post
         
         """
         if job is None:
@@ -329,7 +329,7 @@ class Client(object):
     def get_job_group(self, job_group_id):
         """Return a list of jobs that were previously submitted with submit_job_group().
         See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-jobs-id-get
+        http://gengo.com/services/api/dev-docs/methods/translate-jobs-id-get
         
         """
         response = self._request('GET', 'translate/jobs/{0}'.format(job_group_id))
@@ -338,7 +338,7 @@ class Client(object):
     
     def get_jobs(self, status=None, timestamp_after=None, count=None):
         """Return a list of jobs filtered by the given parameters. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-jobs-get
+        http://gengo.com/services/api/dev-docs/methods/translate-jobs-get
         
         """
         params = {}
@@ -352,7 +352,7 @@ class Client(object):
 
     def submit_job_group(self, jobs, as_group=False, process=True):
         """Submit a group of jobs to be translated together. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-jobs-post
+        http://gengo.com/services/api/dev-docs/methods/translate-jobs-post
         
         """
         params = {'jobs': jobs,
@@ -364,7 +364,7 @@ class Client(object):
     def get_language_pairs(self, source=None):
         """Return list of supported language pairs, filtering by source language if
         given. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-service-language-pairs-get
+        http://gengo.com/services/api/dev-docs/methods/translate-service-language-pairs-get
         
         """
         params = {'lc_src': source} if source else None
@@ -372,7 +372,7 @@ class Client(object):
 
     def get_languages(self):
         """Return list of supported languages and their language codes/names. See also:
-        http://mygengo.com/services/api/dev-docs/methods/translate-service-languages-get
+        http://gengo.com/services/api/dev-docs/methods/translate-service-languages-get
         
         """
         return self._request('GET', 'translate/service/languages')
