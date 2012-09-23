@@ -36,8 +36,8 @@ try:
 except ImportError:
     import json
 
-_api_url = 'http://api.mygengo.com/v1/'
-_sandbox_api_url = 'http://api.sandbox.mygengo.com/v1/'
+_api_url = 'http://api.gengo.com/v1/'
+_sandbox_api_url = 'http://api.sandbox.gengo.com/v1/'
 
 class Error(Exception):
     """API exception base class."""
