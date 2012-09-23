@@ -1,7 +1,7 @@
 mygengo
 =======
 
-Python interface to the [myGengo translation API](http://mygengo.com/api/developer-docs/), as used by [Oyster.com](http://www.oyster.com/).
+Python interface to the [myGengo / Gengo translation API](http://gengo.com/api/developer-docs/), as used by [Oyster.com](http://www.oyster.com/).
 
 Simple example:
 
